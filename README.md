@@ -201,7 +201,7 @@ curl -X POST http://localhost:8001/api/maisons/ \
 
 ## 📚 Documentation API
 
-- **Users Service :** http://localhost:8000/swagger/
+- **Users Service :** http://localhost:8000/user/
 - **Maison Service :** http://localhost:8001/maison/
 
 ## 🐳 Docker
