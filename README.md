@@ -21,13 +21,37 @@ logement_backend/
 │   ├── Dockerfile         # Image Docker
 │   └── requirements.txt   # Dépendances Python
 ├── maison_service/        # Microservice de gestion des maisons
-│   ├── maisons/          # App Django pour les maisons
-│   ├── maison_service/   # Configuration Django du service
+│   ├── maisons/           # App Django pour les maisons
+│   ├── maison_service/    # Configuration Django du service
 │   ├── docker-compose.yml # Configuration Docker
-│   ├── Dockerfile        # Image Docker
-│   └── requirements.txt  # Dépendances Python
+│   ├── Dockerfile         # Image Docker
+│   └── requirements.txt   # Dépendances Python
 ├── chambre_service/       # Microservice de gestion des chambres
-└── README.md             # Ce fichier
+│   ├── chambres/          # App Django pour les chambres
+│   │   ├── migrations/    # Fichiers de migration
+│   │   │   ├── 0001_initial.py
+│   │   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── auth.py        # Authentification custom JWT-only
+│   │   ├── models.py
+│   │   ├── permissions.py
+│   │   ├── serializers.py
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── chambre_service/   # Configuration Django du service
+│   │   ├── __init__.py
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── docker-compose.yml # Configuration Docker
+│   ├── Dockerfile         # Image Docker
+│   ├── requirements.txt   # Dépendances Python
+│   └── manage.py
+└── README.md              # Ce fichier
 ```
 
 ## 🚀 Services
