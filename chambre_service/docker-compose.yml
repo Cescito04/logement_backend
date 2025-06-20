@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: chambre_db
+      POSTGRES_USER: chambre_user
+      POSTGRES_PASSWORD: chambre_pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8002:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=5432
+      - DJANGO_DB_NAME=chambre_db
+      - DJANGO_DB_USER=chambre_user
+      - DJANGO_DB_PASSWORD=chambre_pass
+
+volumes:
+  postgres_data: 

@@ -34,7 +34,7 @@ logement_backend/
 
 **Port :** 8000  
 **Base de données :** PostgreSQL  
-**Documentation :** http://localhost:8000/swagger/
+**Documentation :** http://localhost:8000/user/
 
 #### Fonctionnalités :
 - Gestion des utilisateurs (création, modification, suppression)
