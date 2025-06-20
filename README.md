@@ -8,6 +8,7 @@ Le projet est organisé en microservices indépendants :
 
 - **users_service** : Gestion des utilisateurs et authentification JWT
 - **maison_service** : Gestion des propriétés et maisons
+- **chambre_service** : Gestion des chambres (rattachées à une maison)
 
 ## 📁 Structure du Projet
 
@@ -25,6 +26,7 @@ logement_backend/
 │   ├── docker-compose.yml # Configuration Docker
 │   ├── Dockerfile        # Image Docker
 │   └── requirements.txt  # Dépendances Python
+├── chambre_service/       # Microservice de gestion des chambres
 └── README.md             # Ce fichier
 ```
 
@@ -70,6 +72,52 @@ logement_backend/
 - `POST /api/maisons/create_test_user/` - Créer un utilisateur de test
 - `POST /api/maisons/get_test_token/` - Obtenir un token de test
 
+### Chambre Service
+
+**Port :** 8002  
+**Base de données :** PostgreSQL  
+**Documentation :** http://localhost:8002/chambre/
+
+#### Fonctionnalités :
+- Gestion des chambres (CRUD complet)
+- Chaque chambre appartient à une maison (maison_id)
+- Authentification JWT (compatible users_service)
+- Permissions : seuls les propriétaires peuvent gérer leurs chambres
+- Recherche publique de chambres disponibles avec filtres (type, prix, taille, etc.)
+- Validation du type, du prix et du format de la taille
+- API REST sécurisée
+
+#### Endpoints principaux :
+- `POST /api/chambres/` - Ajouter une chambre à une maison
+- `GET /api/chambres/` - Lister les chambres du propriétaire connecté
+- `GET /api/chambres/{id}/` - Détail d'une chambre
+- `PUT/PATCH /api/chambres/{id}/` - Modifier une chambre
+- `DELETE /api/chambres/{id}/` - Supprimer une chambre
+- `GET /api/chambres/search/` - Rechercher des chambres disponibles (public)
+
+#### Exemple de création de chambre (curl)
+```bash
+curl -X POST http://localhost:8002/api/chambres/ \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "maison_id": 1,
+    "titre": "Chambre lumineuse",
+    "description": "Chambre avec balcon",
+    "taille": "15m²",
+    "type": "simple",
+    "meublee": true,
+    "salle_de_bain": true,
+    "prix": "350.00",
+    "disponible": true
+  }'
+```
+
+#### Exemple de recherche publique
+```bash
+curl -X GET "http://localhost:8002/api/chambres/search/?type=simple&prix_max=400"
+```
+
 ## 🛠️ Installation et Démarrage
 
 ### Prérequis
@@ -82,27 +130,19 @@ git clone <repository-url>
 cd logement_backend
 ```
 
-### 2. Démarrer le Users Service
+### 2. Démarrer chaque service
 ```bash
-cd users_service
-docker-compose up -d
+cd users_service && docker-compose up -d
+cd ../maison_service && docker-compose up -d
+cd ../chambre_service && docker-compose up -d
 ```
 
-### 3. Démarrer le Maison Service
+### 3. Appliquer les migrations
 ```bash
-cd ../maison_service
-docker-compose up -d
-```
-
-### 4. Appliquer les migrations
-```bash
-# Pour users_service
-cd ../users_service
-docker-compose run web python manage.py migrate
-
-# Pour maison_service
-cd ../maison_service
-docker-compose run web python manage.py migrate
+# Pour chaque service
+cd users_service && docker-compose run web python manage.py migrate
+cd ../maison_service && docker-compose run web python manage.py migrate
+cd ../chambre_service && docker-compose run web python manage.py migrate
 ```
 
 ## 🔐 Authentification
@@ -165,6 +205,7 @@ Les services utilisent des variables d'environnement pour la configuration :
 ### Ports
 - Users Service : 8000
 - Maison Service : 8001
+- Chambre Service : 8002
 - PostgreSQL Users : 5432
 - PostgreSQL Maison : 5433
 
@@ -199,10 +240,30 @@ curl -X POST http://localhost:8001/api/maisons/ \
   }'
 ```
 
+### Tester l'API Chambres
+```bash
+# Obtenir un token
+curl -X POST http://localhost:8002/api/chambres/ \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "maison_id": 1,
+    "titre": "Chambre lumineuse",
+    "description": "Chambre avec balcon",
+    "taille": "15m²",
+    "type": "simple",
+    "meublee": true,
+    "salle_de_bain": true,
+    "prix": "350.00",
+    "disponible": true
+  }'
+```
+
 ## 📚 Documentation API
 
 - **Users Service :** http://localhost:8000/user/
 - **Maison Service :** http://localhost:8001/maison/
+- **Chambre Service :** http://localhost:8002/chambre/
 
 ## 🐳 Docker
 
@@ -224,8 +285,8 @@ docker-compose build --no-cache
 ## 🔒 Sécurité
 
 - Authentification JWT obligatoire pour toutes les opérations sensibles
-- Permissions basées sur le propriétaire pour les maisons
-- Validation des coordonnées géographiques
+- Permissions basées sur le propriétaire pour les maisons et chambres
+- Validation des coordonnées géographiques et des formats
 - Tokens avec expiration automatique
 - Communication sécurisée entre microservices
 
